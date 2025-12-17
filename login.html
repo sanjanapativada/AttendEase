@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AttendEase | Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen flex items-center justify-center
+             bg-gradient-to-br from-[#ecfdf5] to-[#e0f2fe]">
+
+<div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+  <h1 class="text-3xl font-bold text-center text-emerald-600 mb-2">
+    AttendEase
+  </h1>
+  <p class="text-center text-gray-500 mb-6">
+    Smart Attendance. Zero Stress.
+  </p>
+
+  <input id="email"
+    placeholder="Email (to access previous stats)"
+    class="w-full p-3 mb-3 border rounded">
+
+  <input id="name"
+    placeholder="Your name"
+    class="w-full p-3 mb-3 border rounded">
+
+  <input id="min" type="number" value="75"
+    class="w-full p-3 mb-4 border rounded">
+
+  <button onclick="loginUser()"
+    class="w-full bg-emerald-500 text-white py-3 rounded-lg font-semibold mb-3">
+    Login
+  </button>
+
+  <div class="text-center text-gray-400 mb-3">or</div>
+
+  <button onclick="guestLogin()"
+    class="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold">
+    Continue as Guest
+  </button>
+</div>
+
+<script>
+  function loginUser() {
+    if (!email.value) return alert("Email is required");
+
+    const key = "attendEase_" + email.value;
+    localStorage.setItem("currentUser", key);
+
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, JSON.stringify({
+        user: {
+          name: name.value || "Student",
+          email: email.value,
+          min: Number(min.value)
+        },
+        subjects: [],
+        reminders: []
+      }));
+    }
+
+    window.location.href = "dashboard.html";
+  }
+
+  function guestLogin() {
+    localStorage.setItem("currentUser", "guest");
+    localStorage.setItem("guest", JSON.stringify({
+      user: { name: "Guest", email: "", min: 75 },
+      subjects: [],
+      reminders: []
+    }));
+    window.location.href = "dashboard.html";
+  }
+</script>
+
+</body>
+</html>

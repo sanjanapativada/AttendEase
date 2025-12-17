@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AttendEase | Dashboard</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+</head>
+
+<body class="min-h-screen
+             bg-gradient-to-br from-[#ecfdf5] to-[#e0f2fe]
+             dark:from-gray-900 dark:to-gray-800
+             text-gray-900 dark:text-gray-100">
+
+<!-- 🔔 FLOATING ALERT -->
+<div id="alertBar"
+  class="fixed top-4 left-1/2 -translate-x-1/2
+         z-50 px-6 py-3 rounded-xl shadow-lg
+         bg-[#a7f3d0] text-emerald-900
+         dark:bg-gray-700 dark:text-white">
+</div>
+
+<!-- HEADER -->
+<header class="flex justify-between items-center p-6 max-w-6xl mx-auto pt-24">
+  <h1 class="text-2xl font-bold text-emerald-600">AttendEase</h1>
+  <button onclick="toggleTheme()"
+    class="px-4 py-2 rounded-xl bg-white/70 dark:bg-gray-700 shadow">
+    🌙 / ☀️
+  </button>
+</header>
+
+<!-- NAV -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto px-6">
+  <button onclick="show('calc')" class="nav">📊 Calculator</button>
+  <button onclick="show('analytics')" class="nav">📈 Analytics</button>
+  <button onclick="show('reminders')" class="nav">⏰ Reminders</button>
+  <button onclick="show('profile')" class="nav">👤 Profile</button>
+</section>
+
+<main class="max-w-6xl mx-auto p-6 space-y-8">
+
+<!-- CALCULATOR -->
+<section id="calc" class="section">
+  <h2 class="title">Attendance Calculator</h2>
+
+  <div class="grid md:grid-cols-4 gap-4 mb-4">
+    <input id="sub" placeholder="Subject" class="input">
+    <input id="att" type="number" placeholder="Attended" class="input">
+    <input id="tot" type="number" placeholder="Total" class="input">
+    <button onclick="addSubject()" class="btn">Add</button>
+  </div>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full border-collapse rounded-xl overflow-hidden">
+      <thead class="bg-[#a7f3d0]">
+        <tr>
+          <th class="p-3 text-left">Subject</th>
+          <th class="p-3">Attended</th>
+          <th class="p-3">Total</th>
+          <th class="p-3">%</th>
+          <th class="p-3">Status</th>
+        </tr>
+      </thead>
+      <tbody id="subjects"></tbody>
+    </table>
+  </div>
+
+  <div id="overallStats"
+       class="grid md:grid-cols-3 gap-4 text-center font-semibold">
+  </div>
+</section>
+
+<!-- ANALYTICS -->
+<section id="analytics" class="section hidden">
+  <h2 class="title">Overall Attendance Analytics</h2>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="bg-white p-4 rounded-xl shadow">
+      <canvas id="barChart" height="220"></canvas>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow">
+      <canvas id="pieChart" height="220"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- REMINDERS -->
+<section id="reminders" class="section hidden">
+  <h2 class="title">Class Reminders (Email)</h2>
+
+  <div class="grid md:grid-cols-4 gap-4 mb-4">
+    <input id="remSub" placeholder="Subject" class="input">
+    <input id="remDay" placeholder="Day" class="input">
+    <input id="remTime" placeholder="Time" class="input">
+    <button onclick="addReminder()" class="btn">Add</button>
+  </div>
+
+  <ul id="reminderList" class="space-y-3"></ul>
+</section>
+
+<!-- PROFILE -->
+<section id="profile" class="section hidden">
+  <h2 class="title">Profile</h2>
+  <pre id="profileData"
+    class="bg-gray-100 dark:bg-gray-800 p-4 rounded"></pre>
+</section>
+
+</main>
+
+<style>
+  .nav{background:white;padding:1rem;border-radius:1rem;font-weight:600;box-shadow:0 6px 16px rgba(0,0,0,.08)}
+  .section{background:white;padding:1.5rem;border-radius:1.25rem;box-shadow:0 6px 16px rgba(0,0,0,.08)}
+  .title{font-size:1.25rem;font-weight:700;margin-bottom:1rem;color:#059669}
+  .input{padding:.75rem;border:1px solid #ccc;border-radius:.75rem}
+  .btn{background:linear-gradient(135deg,#a7f3d0,#bfdbfe);border-radius:.75rem;font-weight:600}
+</style>
+
+<script src="app.js"></script>
+<script src="email.js"></script>
+</body>
+</html>
