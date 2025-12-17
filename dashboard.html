@@ -4,32 +4,41 @@
   <meta charset="UTF-8" />
   <title>AttendEase | Dashboard</title>
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <script>
     tailwind.config = { darkMode: 'class' }
   </script>
+
+  <!-- Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="min-h-screen
              bg-gradient-to-br from-[#ecfdf5] to-[#e0f2fe]
              dark:from-gray-900 dark:to-gray-800
-             text-gray-900 dark:text-gray-100">
+             text-gray-900 dark:text-gray-100
+             transition-colors duration-300">
 
-<!-- 🔔 FLOATING ALERT -->
+<!-- FLOATING ALERT -->
 <div id="alertBar"
-  class="fixed top-4 left-1/2 -translate-x-1/2
-         z-50 px-6 py-3 rounded-xl shadow-lg
+  class="fixed top-4 left-1/2 -translate-x-1/2 z-50
+         px-6 py-3 rounded-xl shadow-lg
          bg-[#a7f3d0] text-emerald-900
-         dark:bg-gray-700 dark:text-white">
+         dark:bg-gray-700 dark:text-gray-100">
 </div>
 
 <!-- HEADER -->
-<header class="flex justify-between items-center p-6 max-w-6xl mx-auto pt-24">
-  <h1 class="text-2xl font-bold text-emerald-600">AttendEase</h1>
+<header class="flex justify-between items-center p-6 pt-24 max-w-6xl mx-auto">
+  <h1 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+    AttendEase
+  </h1>
+
   <button onclick="toggleTheme()"
-    class="px-4 py-2 rounded-xl bg-white/70 dark:bg-gray-700 shadow">
+    class="px-4 py-2 rounded-xl
+           bg-white/70 dark:bg-gray-700
+           text-gray-900 dark:text-gray-100
+           shadow transition">
     🌙 / ☀️
   </button>
 </header>
@@ -42,6 +51,7 @@
   <button onclick="show('profile')" class="nav">👤 Profile</button>
 </section>
 
+<!-- MAIN -->
 <main class="max-w-6xl mx-auto p-6 space-y-8">
 
 <!-- CALCULATOR -->
@@ -55,37 +65,36 @@
     <button onclick="addSubject()" class="btn">Add</button>
   </div>
 
-  <div class="overflow-x-auto mb-6">
-    <table class="w-full border-collapse rounded-xl overflow-hidden">
-      <thead class="bg-[#a7f3d0]">
-        <tr>
-          <th class="p-3 text-left">Subject</th>
-          <th class="p-3">Attended</th>
-          <th class="p-3">Total</th>
-          <th class="p-3">%</th>
-          <th class="p-3">Status</th>
-        </tr>
-      </thead>
-      <tbody id="subjects"></tbody>
-    </table>
-  </div>
+  <table class="w-full rounded-xl overflow-hidden
+               text-gray-900 dark:text-gray-100">
+    <thead class="bg-[#a7f3d0] dark:bg-gray-700">
+      <tr>
+        <th class="p-3 text-left">Subject</th>
+        <th class="p-3">Attended</th>
+        <th class="p-3">Total</th>
+        <th class="p-3">%</th>
+        <th class="p-3">Status</th>
+      </tr>
+    </thead>
+    <tbody id="subjects"></tbody>
+  </table>
 
   <div id="overallStats"
-       class="grid md:grid-cols-3 gap-4 text-center font-semibold">
+       class="grid md:grid-cols-3 gap-4 mt-6
+              text-center font-semibold">
   </div>
 </section>
 
 <!-- ANALYTICS -->
 <section id="analytics" class="section hidden">
-  <h2 class="title">Overall Attendance Analytics</h2>
+  <h2 class="title">Analytics</h2>
 
   <div class="grid md:grid-cols-2 gap-6">
-    <div class="bg-white p-4 rounded-xl shadow">
-      <canvas id="barChart" height="220"></canvas>
+    <div class="chartCard">
+      <canvas id="barChart"></canvas>
     </div>
-
-    <div class="bg-white p-4 rounded-xl shadow">
-      <canvas id="pieChart" height="220"></canvas>
+    <div class="chartCard">
+      <canvas id="pieChart"></canvas>
     </div>
   </div>
 </section>
@@ -107,21 +116,90 @@
 <!-- PROFILE -->
 <section id="profile" class="section hidden">
   <h2 class="title">Profile</h2>
-  <pre id="profileData"
-    class="bg-gray-100 dark:bg-gray-800 p-4 rounded"></pre>
+
+  <div id="profileData"
+       class="bg-[#ecfdf5] dark:bg-gray-800
+              text-gray-900 dark:text-gray-100
+              p-6 rounded-xl space-y-3">
+  </div>
 </section>
 
 </main>
 
+<!-- STYLES -->
 <style>
-  .nav{background:white;padding:1rem;border-radius:1rem;font-weight:600;box-shadow:0 6px 16px rgba(0,0,0,.08)}
-  .section{background:white;padding:1.5rem;border-radius:1.25rem;box-shadow:0 6px 16px rgba(0,0,0,.08)}
-  .title{font-size:1.25rem;font-weight:700;margin-bottom:1rem;color:#059669}
-  .input{padding:.75rem;border:1px solid #ccc;border-radius:.75rem}
-  .btn{background:linear-gradient(135deg,#a7f3d0,#bfdbfe);border-radius:.75rem;font-weight:600}
+  .nav{
+    background:white;
+    color:#1f2937;
+    padding:1rem;
+    border-radius:1rem;
+    font-weight:600;
+    box-shadow:0 6px 16px rgba(0,0,0,.08);
+    transition:.3s;
+  }
+  .dark .nav{
+    background:#1f2937;
+    color:#f9fafb;
+  }
+
+  .section{
+    background:white;
+    color:#1f2937;
+    padding:1.5rem;
+    border-radius:1.25rem;
+    box-shadow:0 6px 16px rgba(0,0,0,.08);
+    transition:.3s;
+  }
+  .dark .section{
+    background:#111827;
+    color:#f9fafb;
+  }
+
+  .title{
+    font-size:1.25rem;
+    font-weight:700;
+    margin-bottom:1rem;
+    color:#059669;
+  }
+  .dark .title{
+    color:#6ee7b7;
+  }
+
+  .input{
+    padding:.75rem;
+    border-radius:.75rem;
+    border:1px solid #ccc;
+    background:white;
+    color:#1f2937;
+  }
+  .dark .input{
+    background:#1f2937;
+    color:#f9fafb;
+    border-color:#374151;
+  }
+
+  .btn{
+    background:linear-gradient(135deg,#a7f3d0,#bfdbfe);
+    padding:.75rem;
+    border-radius:.75rem;
+    font-weight:600;
+    color:#064e3b;
+  }
+
+  .chartCard{
+    background:white;
+    padding:1rem;
+    border-radius:1rem;
+    box-shadow:0 6px 16px rgba(0,0,0,.08);
+  }
+  .dark .chartCard{
+    background:#1f2937;
+  }
 </style>
 
+<!-- SCRIPTS -->
 <script src="app.js"></script>
 <script src="email.js"></script>
+
 </body>
 </html>
