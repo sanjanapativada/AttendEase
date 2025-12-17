@@ -6,42 +6,45 @@
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { darkMode: 'class' }
-  </script>
+  <script>tailwind.config={darkMode:'class'}</script>
 
   <!-- Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body class="min-h-screen
-             bg-gradient-to-br from-[#ecfdf5] to-[#e0f2fe]
-             dark:from-gray-900 dark:to-gray-800
-             text-gray-900 dark:text-gray-100
-             transition-colors duration-300">
+<body id="page"
+  class="min-h-screen opacity-0 translate-y-6
+         bg-gradient-to-br from-[#ecfdf5] to-[#e0f2fe]
+         dark:from-gray-900 dark:to-gray-800
+         text-gray-900 dark:text-gray-100
+         transition-all duration-700 ease-out">
 
 <!-- FLOATING ALERT -->
 <div id="alertBar"
   class="fixed top-4 left-1/2 -translate-x-1/2 z-50
-         px-6 py-3 rounded-xl shadow-lg
+         px-6 py-3 rounded-xl shadow-xl
          bg-[#a7f3d0] text-emerald-900
-         dark:bg-gray-700 dark:text-gray-100">
+         dark:bg-gray-700 dark:text-gray-100
+         animate-pulse">
 </div>
 
 <!-- HEADER -->
 <header class="flex justify-between items-center p-6 pt-24 max-w-6xl mx-auto">
-  <h1 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+  <h1 class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
     AttendEase
   </h1>
 
   <button onclick="toggleTheme()"
     class="px-4 py-2 rounded-xl
            bg-white/70 dark:bg-gray-700
-           text-gray-900 dark:text-gray-100
-           shadow transition">
+           shadow hover:scale-105 transition">
     🌙 / ☀️
   </button>
 </header>
+
+<p class="text-center text-gray-600 dark:text-gray-300 mb-6 animate-fadeIn">
+  Track smart. Stay safe. Stress less.
+</p>
 
 <!-- NAV -->
 <section class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto px-6">
@@ -55,7 +58,7 @@
 <main class="max-w-6xl mx-auto p-6 space-y-8">
 
 <!-- CALCULATOR -->
-<section id="calc" class="section">
+<section id="calc" class="section animate-section">
   <h2 class="title">Attendance Calculator</h2>
 
   <div class="grid md:grid-cols-4 gap-4 mb-4">
@@ -65,8 +68,7 @@
     <button onclick="addSubject()" class="btn">Add</button>
   </div>
 
-  <table class="w-full rounded-xl overflow-hidden
-               text-gray-900 dark:text-gray-100">
+  <table class="w-full rounded-xl overflow-hidden">
     <thead class="bg-[#a7f3d0] dark:bg-gray-700">
       <tr>
         <th class="p-3 text-left">Subject</th>
@@ -81,125 +83,109 @@
 
   <div id="overallStats"
        class="grid md:grid-cols-3 gap-4 mt-6
-              text-center font-semibold">
+              text-center font-semibold animate-stats">
   </div>
 </section>
 
 <!-- ANALYTICS -->
-<section id="analytics" class="section hidden">
+<section id="analytics" class="section hidden animate-section">
   <h2 class="title">Analytics</h2>
-
   <div class="grid md:grid-cols-2 gap-6">
-    <div class="chartCard">
-      <canvas id="barChart"></canvas>
-    </div>
-    <div class="chartCard">
-      <canvas id="pieChart"></canvas>
-    </div>
+    <div class="chartCard"><canvas id="barChart"></canvas></div>
+    <div class="chartCard"><canvas id="pieChart"></canvas></div>
   </div>
 </section>
 
 <!-- REMINDERS -->
-<section id="reminders" class="section hidden">
-  <h2 class="title">Class Reminders (Email)</h2>
-
+<section id="reminders" class="section hidden animate-section">
+  <h2 class="title">Class Reminders</h2>
   <div class="grid md:grid-cols-4 gap-4 mb-4">
     <input id="remSub" placeholder="Subject" class="input">
     <input id="remDay" placeholder="Day" class="input">
     <input id="remTime" placeholder="Time" class="input">
     <button onclick="addReminder()" class="btn">Add</button>
   </div>
-
   <ul id="reminderList" class="space-y-3"></ul>
 </section>
 
 <!-- PROFILE -->
-<section id="profile" class="section hidden">
+<section id="profile" class="section hidden animate-section">
   <h2 class="title">Profile</h2>
-
   <div id="profileData"
-       class="bg-[#ecfdf5] dark:bg-gray-800
-              text-gray-900 dark:text-gray-100
-              p-6 rounded-xl space-y-3">
+    class="bg-[#ecfdf5] dark:bg-gray-800
+           p-6 rounded-xl space-y-3 animate-profile">
   </div>
 </section>
 
 </main>
 
-<!-- STYLES -->
+<!-- ANIMATION STYLES -->
 <style>
-  .nav{
-    background:white;
-    color:#1f2937;
-    padding:1rem;
-    border-radius:1rem;
-    font-weight:600;
-    box-shadow:0 6px 16px rgba(0,0,0,.08);
-    transition:.3s;
-  }
-  .dark .nav{
-    background:#1f2937;
-    color:#f9fafb;
-  }
+/* NAV */
+.nav{
+  background:linear-gradient(135deg,#ecfdf5,#e0f2fe);
+  padding:1rem;border-radius:1.25rem;font-weight:600;
+  box-shadow:0 10px 20px rgba(0,0,0,.08);
+  transition:all .3s ease;
+}
+.nav:hover{
+  transform:translateY(-6px) scale(1.05);
+  box-shadow:0 25px 40px rgba(0,0,0,.15);
+}
+.dark .nav{background:#1f2937;color:#ecfdf5}
 
-  .section{
-    background:white;
-    color:#1f2937;
-    padding:1.5rem;
-    border-radius:1.25rem;
-    box-shadow:0 6px 16px rgba(0,0,0,.08);
-    transition:.3s;
-  }
-  .dark .section{
-    background:#111827;
-    color:#f9fafb;
-  }
+/* SECTIONS */
+.section{
+  background:white;padding:2rem;border-radius:1.75rem;
+  box-shadow:0 25px 50px rgba(0,0,0,.1);
+  transition:all .4s ease;
+}
+.dark .section{background:#111827}
 
-  .title{
-    font-size:1.25rem;
-    font-weight:700;
-    margin-bottom:1rem;
-    color:#059669;
-  }
-  .dark .title{
-    color:#6ee7b7;
-  }
+/* TITLES */
+.title{font-size:1.4rem;font-weight:700;color:#059669}
+.dark .title{color:#6ee7b7}
 
-  .input{
-    padding:.75rem;
-    border-radius:.75rem;
-    border:1px solid #ccc;
-    background:white;
-    color:#1f2937;
-  }
-  .dark .input{
-    background:#1f2937;
-    color:#f9fafb;
-    border-color:#374151;
-  }
+/* INPUTS */
+.input{
+  padding:.75rem;border-radius:.75rem;border:1px solid #ccc;
+}
+.dark .input{background:#1f2937;color:#f9fafb;border-color:#374151}
 
-  .btn{
-    background:linear-gradient(135deg,#a7f3d0,#bfdbfe);
-    padding:.75rem;
-    border-radius:.75rem;
-    font-weight:600;
-    color:#064e3b;
-  }
+/* BUTTON */
+.btn{
+  background:linear-gradient(135deg,#a7f3d0,#bfdbfe);
+  padding:.75rem;border-radius:.75rem;font-weight:600;
+  transition:.25s;
+}
+.btn:hover{transform:scale(1.05)}
 
-  .chartCard{
-    background:white;
-    padding:1rem;
-    border-radius:1rem;
-    box-shadow:0 6px 16px rgba(0,0,0,.08);
-  }
-  .dark .chartCard{
-    background:#1f2937;
-  }
+/* CHART CARD */
+.chartCard{
+  background:linear-gradient(135deg,#ecfdf5,#e0f2fe);
+  padding:1.5rem;border-radius:1.75rem;
+  box-shadow:0 20px 40px rgba(0,0,0,.12);
+}
+.dark .chartCard{background:#1f2937}
+
+/* ANIMATIONS */
+.animate-section{
+  animation:fadeSlide .6s ease forwards;
+}
+@keyframes fadeSlide{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
 </style>
 
-<!-- SCRIPTS -->
+<!-- PAGE LOAD ANIMATION -->
+<script>
+window.onload = () => {
+  document.getElementById("page").classList.remove("opacity-0","translate-y-6");
+};
+</script>
+
 <script src="app.js"></script>
 <script src="email.js"></script>
-
 </body>
 </html>
