@@ -24,8 +24,7 @@
   class="fixed top-4 left-1/2 -translate-x-1/2 z-50
          px-6 py-3 rounded-xl shadow-xl
          bg-[#a7f3d0] text-emerald-900
-         dark:bg-gray-700 dark:text-gray-100
-         animate-pulse">
+         dark:bg-gray-700 dark:text-gray-100">
 </div>
 
 <!-- HEADER -->
@@ -42,7 +41,7 @@
   </button>
 </header>
 
-<p class="text-center text-gray-600 dark:text-gray-300 mb-6 animate-fadeIn">
+<p class="text-center text-gray-600 dark:text-gray-300 mb-6">
   Track smart. Stay safe. Stress less.
 </p>
 
@@ -58,7 +57,7 @@
 <main class="max-w-6xl mx-auto p-6 space-y-8">
 
 <!-- CALCULATOR -->
-<section id="calc" class="section animate-section">
+<section id="calc" class="section">
   <h2 class="title">Attendance Calculator</h2>
 
   <div class="grid md:grid-cols-4 gap-4 mb-4">
@@ -82,13 +81,12 @@
   </table>
 
   <div id="overallStats"
-       class="grid md:grid-cols-3 gap-4 mt-6
-              text-center font-semibold animate-stats">
+       class="grid md:grid-cols-3 gap-4 mt-6 text-center font-semibold">
   </div>
 </section>
 
 <!-- ANALYTICS -->
-<section id="analytics" class="section hidden animate-section">
+<section id="analytics" class="section hidden">
   <h2 class="title">Analytics</h2>
   <div class="grid md:grid-cols-2 gap-6">
     <div class="chartCard"><canvas id="barChart"></canvas></div>
@@ -97,7 +95,7 @@
 </section>
 
 <!-- REMINDERS -->
-<section id="reminders" class="section hidden animate-section">
+<section id="reminders" class="section hidden">
   <h2 class="title">Class Reminders</h2>
   <div class="grid md:grid-cols-4 gap-4 mb-4">
     <input id="remSub" placeholder="Subject" class="input">
@@ -109,82 +107,65 @@
 </section>
 
 <!-- PROFILE -->
-<section id="profile" class="section hidden animate-section">
+<section id="profile" class="section hidden">
   <h2 class="title">Profile</h2>
   <div id="profileData"
     class="bg-[#ecfdf5] dark:bg-gray-800
-           p-6 rounded-xl space-y-3 animate-profile">
+           text-gray-900 dark:text-gray-100
+           p-6 rounded-xl space-y-3">
   </div>
 </section>
 
 </main>
 
-<!-- ANIMATION STYLES -->
+<!-- STYLES -->
 <style>
-/* NAV */
 .nav{
   background:linear-gradient(135deg,#ecfdf5,#e0f2fe);
   padding:1rem;border-radius:1.25rem;font-weight:600;
   box-shadow:0 10px 20px rgba(0,0,0,.08);
-  transition:all .3s ease;
+  transition:.3s;
 }
-.nav:hover{
-  transform:translateY(-6px) scale(1.05);
-  box-shadow:0 25px 40px rgba(0,0,0,.15);
-}
+.nav:hover{transform:translateY(-5px) scale(1.04)}
 .dark .nav{background:#1f2937;color:#ecfdf5}
 
-/* SECTIONS */
 .section{
   background:white;padding:2rem;border-radius:1.75rem;
   box-shadow:0 25px 50px rgba(0,0,0,.1);
-  transition:all .4s ease;
 }
 .dark .section{background:#111827}
 
-/* TITLES */
 .title{font-size:1.4rem;font-weight:700;color:#059669}
 .dark .title{color:#6ee7b7}
 
-/* INPUTS */
 .input{
   padding:.75rem;border-radius:.75rem;border:1px solid #ccc;
 }
 .dark .input{background:#1f2937;color:#f9fafb;border-color:#374151}
 
-/* BUTTON */
 .btn{
   background:linear-gradient(135deg,#a7f3d0,#bfdbfe);
   padding:.75rem;border-radius:.75rem;font-weight:600;
-  transition:.25s;
 }
 .btn:hover{transform:scale(1.05)}
 
-/* CHART CARD */
 .chartCard{
   background:linear-gradient(135deg,#ecfdf5,#e0f2fe);
   padding:1.5rem;border-radius:1.75rem;
-  box-shadow:0 20px 40px rgba(0,0,0,.12);
 }
 .dark .chartCard{background:#1f2937}
-
-/* ANIMATIONS */
-.animate-section{
-  animation:fadeSlide .6s ease forwards;
-}
-@keyframes fadeSlide{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:translateY(0)}
-}
 </style>
 
-<!-- PAGE LOAD ANIMATION -->
+<!-- PAGE LOAD -->
 <script>
-window.onload = () => {
-  document.getElementById("page").classList.remove("opacity-0","translate-y-6");
+window.onload=()=>{
+  page.classList.remove("opacity-0","translate-y-6");
 };
 </script>
 
+<script src="app.js"></script>
+<script src="email.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script src="app.js"></script>
 <script src="email.js"></script>
 </body>
