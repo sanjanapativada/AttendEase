@@ -1,13 +1,9 @@
-/*********************************
- * ATTENDEASE – FINAL STABLE APP
- *********************************/
-
-// ---------- LOAD USER ----------
 const userKey = localStorage.getItem("currentUser") || "guest";
+
 const data = JSON.parse(localStorage.getItem(userKey)) || {
-  user: { name: "Guest", email: "", min: 75 },
-  subjects: [],
-  reminders: []
+  user:{name:"Guest",email:"",min:75},
+  subjects:[],
+  reminders:[]
 };
 
 const user = data.user;
@@ -15,189 +11,139 @@ let subjects = data.subjects;
 let reminders = data.reminders;
 const MIN = user.min;
 
-// ---------- HELPERS ----------
 const $ = id => document.getElementById(id);
 
 // ---------- NAV ----------
 function show(id){
-  document.querySelectorAll(".section").forEach(s =>
-    s.classList.add("hidden")
-  );
-  $(id).classList.remove("hidden");
+  document.querySelectorAll(".section").forEach(s=>s.classList.add("hidden"));
+  const section = $(id);
+  section.classList.remove("hidden");
+
+  if(id === "analytics") {
+    setTimeout(drawCharts, 100); // ensure visible
+  }
 }
 
 // ---------- CALCULATIONS ----------
-function percent(a, t){
-  return ((a / t) * 100).toFixed(1);
-}
-
-function need(a, t){
-  let x = 0;
-  while (((a + x) / (t + x)) * 100 < MIN) x++;
-  return x;
-}
-
-function safeSkips(a, t){
-  let y = 0;
-  while ((a / (t + y + 1)) * 100 >= MIN) y++;
-  return y;
-}
+const percent=(a,t)=>((a/t)*100).toFixed(1);
+const need=(a,t)=>{let x=0;while(((a+x)/(t+x))*100<MIN)x++;return x;}
+const safeSkips=(a,t)=>{let y=0;while((a/(t+y+1))*100>=MIN)y++;return y;}
 
 // ---------- SUBJECTS ----------
 function addSubject(){
-  const name = $("sub").value.trim();
-  const a = Number($("att").value);
-  const t = Number($("tot").value);
-
-  if (!name || isNaN(a) || isNaN(t) || a < 0 || t <= 0 || a > t) {
-    alert("Please enter valid subject data");
-    return;
-  }
-
-  subjects.push({ name, a, t });
-
-  $("sub").value = "";
-  $("att").value = "";
-  $("tot").value = "";
-
+  if(!sub.value || att.value<0 || tot.value<=0 || +att.value>+tot.value) return;
+  subjects.push({name:sub.value,a:+att.value,t:+tot.value});
+  sub.value=att.value=tot.value="";
   save();
 }
 
-function editSubject(index){
-  const s = subjects[index];
-
-  const a = Number(prompt(`Attended classes for ${s.name}:`, s.a));
-  const t = Number(prompt(`Total classes for ${s.name}:`, s.t));
-
-  if (isNaN(a) || isNaN(t) || a < 0 || t <= 0 || a > t) {
-    alert("Invalid values");
-    return;
-  }
-
-  s.a = a;
-  s.t = t;
+function editSubject(i){
+  const s=subjects[i];
+  const a=+prompt("Attended classes:",s.a);
+  const t=+prompt("Total classes:",s.t);
+  if(a<0 || t<=0 || a>t) return;
+  s.a=a; s.t=t;
   save();
 }
 
-// ---------- RENDER SUBJECT TABLE ----------
 function renderSubjects(){
-  const tbody = $("subjects");
-  if (!tbody) return;
-
-  tbody.innerHTML = "";
-
-  subjects.forEach((s, i) => {
-    const p = percent(s.a, s.t);
-
-    const status =
-      p < MIN
-        ? `Attend ${need(s.a, s.t)} more`
-        : `Safe 😌 | Skip ${safeSkips(s.a, s.t)} classes`;
-
-    tbody.innerHTML += `
-      <tr onclick="editSubject(${i})"
-          class="cursor-pointer hover:bg-[#ecfdf5] dark:hover:bg-gray-700 transition">
-        <td class="p-3 text-left font-semibold">${s.name}</td>
-        <td class="p-3">${s.a}</td>
-        <td class="p-3">${s.t}</td>
-        <td class="p-3">${p}%</td>
-        <td class="p-3 font-semibold">${status}</td>
-      </tr>
-    `;
-  });
+  subjectsEl.innerHTML = subjects.map((s,i)=>{
+    const p = percent(s.a,s.t);
+    const safe = p >= MIN;
+    return `
+    <tr onclick="editSubject(${i})"
+      class="cursor-pointer hover:bg-[#ecfdf5] dark:hover:bg-gray-700">
+      <td class="p-3 font-semibold">${s.name}</td>
+      <td class="p-3">${s.a}</td>
+      <td class="p-3">${s.t}</td>
+      <td class="p-3">${p}%</td>
+      <td class="p-3 font-semibold ${
+        safe ? "text-emerald-600 dark:text-emerald-400"
+             : "text-red-600 dark:text-red-400"
+      }">
+        ${safe ? `Safe 😌 | Skip ${safeSkips(s.a,s.t)}`
+               : `Attend ${need(s.a,s.t)}`}
+      </td>
+    </tr>`;
+  }).join("");
 }
 
-// ---------- OVERALL ATTENDANCE ----------
+// ---------- OVERALL ----------
 function overall(){
-  let A = 0, T = 0;
-  subjects.forEach(s => {
-    A += s.a;
-    T += s.t;
-  });
-  return { A, T, p: T ? (A / T) * 100 : 0 };
+  let A=0,T=0;
+  subjects.forEach(s=>{A+=s.a;T+=s.t});
+  return {A,T,p:T?(A/T*100):0};
 }
 
-// ---------- ALERT ----------
 function updateAlert(){
-  const bar = $("alertBar");
-  if (!bar) return;
-
-  const o = overall();
-
-  if (!o.T) {
-    bar.innerText = "Add subjects to start tracking attendance";
-    return;
-  }
-
-  bar.innerText =
-    o.p < MIN
-      ? `⚠️ Overall ${o.p.toFixed(1)}% — Attend ${need(o.A, o.T)} more classes`
-      : `😌 Overall ${o.p.toFixed(1)}% — You are in the safe zone`;
+  const o=overall();
+  alertBar.innerText = !o.T
+    ? "Add subjects to start tracking attendance"
+    : o.p<MIN
+      ? `⚠️ Overall ${o.p.toFixed(1)}% — Attend ${need(o.A,o.T)} more`
+      : `😌 Overall ${o.p.toFixed(1)}% — Safe zone`;
 }
 
-// ---------- OVERALL STATS ----------
 function renderOverallStats(){
-  const box = $("overallStats");
-  if (!box) return;
-
   const o = overall();
-  if (!o.T) {
-    box.innerHTML = "";
-    return;
-  }
+  if(!o.T){ overallStats.innerHTML=""; return; }
 
-  box.innerHTML = `
-    <div class="bg-[#ecfdf5] p-4 rounded-xl">
+  overallStats.innerHTML = `
+    <div class="p-4 rounded-xl bg-[#ecfdf5] dark:bg-gray-800
+                text-gray-900 dark:text-gray-100">
       Overall Attendance<br>
-      <b>${o.p.toFixed(1)}%</b>
+      <b class="text-2xl">${o.p.toFixed(1)}%</b>
     </div>
 
-    <div class="bg-[#ecfdf5] p-4 rounded-xl">
+    <div class="p-4 rounded-xl bg-[#ecfdf5] dark:bg-gray-800
+                text-gray-900 dark:text-gray-100">
       Classes to Attend<br>
-      <b>${o.p < MIN ? need(o.A, o.T) : 0}</b>
+      <b class="text-2xl">${o.p<MIN?need(o.A,o.T):0}</b>
     </div>
 
-    <div class="bg-[#ecfdf5] p-4 rounded-xl">
+    <div class="p-4 rounded-xl bg-[#ecfdf5] dark:bg-gray-800
+                text-gray-900 dark:text-gray-100">
       Safe Classes to Skip<br>
-      <b>${o.p >= MIN ? safeSkips(o.A, o.T) : 0}</b>
-    </div>
-  `;
+      <b class="text-2xl">${o.p>=MIN?safeSkips(o.A,o.T):0}</b>
+    </div>`;
 }
 
-// ---------- ANALYTICS ----------
-let barChart = null;
-let pieChart = null;
+// ---------- CHARTS ----------
+let barChart, pieChart;
 
 function drawCharts(){
   const o = overall();
+  if(!subjects.length) return;
 
-  if (barChart) barChart.destroy();
-  if (pieChart) pieChart.destroy();
+  const barCanvas = document.getElementById("barChart");
+  const pieCanvas = document.getElementById("pieChart");
 
-  barChart = new Chart($("barChart"), {
-    type: "bar",
-    data: {
-      labels: subjects.map(s => s.name),
-      datasets: [{
-        label: "Attendance %",
-        data: subjects.map(s => percent(s.a, s.t)),
-        backgroundColor: "#a7f3d0"
+  if(barChart) barChart.destroy();
+  if(pieChart) pieChart.destroy();
+
+  barChart = new Chart(barCanvas,{
+    type:"bar",
+    data:{
+      labels:subjects.map(s=>s.name),
+      datasets:[{
+        label:"Attendance %",
+        data:subjects.map(s=>percent(s.a,s.t)),
+        backgroundColor:"#a7f3d0"
       }]
     },
-    options: {
-      scales: {
-        y: { beginAtZero: true, max: 100 }
-      }
+    options:{
+      responsive:true,
+      scales:{y:{beginAtZero:true,max:100}}
     }
   });
 
-  pieChart = new Chart($("pieChart"), {
-    type: "pie",
-    data: {
-      labels: ["Attended", "Missed"],
-      datasets: [{
-        data: [o.A, o.T - o.A],
-        backgroundColor: ["#6ee7b7", "#bfdbfe"]
+  pieChart = new Chart(pieCanvas,{
+    type:"pie",
+    data:{
+      labels:["Attended","Missed"],
+      datasets:[{
+        data:[o.A,o.T-o.A],
+        backgroundColor:["#6ee7b7","#bfdbfe"]
       }]
     }
   });
@@ -205,65 +151,29 @@ function drawCharts(){
 
 // ---------- REMINDERS ----------
 function addReminder(){
-  const subject = $("remSub").value;
-  const day = $("remDay").value;
-  const time = $("remTime").value;
-
-  if (!subject || !day || !time) {
-    alert("Fill all reminder fields");
-    return;
-  }
-
-  reminders.push({ subject, day, time });
-
-  $("remSub").value = "";
-  $("remDay").value = "";
-  $("remTime").value = "";
-
+  reminders.push({subject:remSub.value,day:remDay.value,time:remTime.value});
+  remSub.value=remDay.value=remTime.value="";
   save();
 }
 
 function renderReminders(){
-  const list = $("reminderList");
-  if (!list) return;
-
-  list.innerHTML = "";
-
-  reminders.forEach(r => {
-    list.innerHTML += `
-      <li class="p-3 bg-[#ecfdf5] rounded flex justify-between items-center">
-        <span>📚 <b>${r.subject}</b> — ${r.day}, ${r.time}</span>
-        <button
-          onclick="sendClassReminder('${r.subject}','${r.time}')"
-          class="text-emerald-600 font-semibold text-sm">
-          Send Email
-        </button>
-      </li>
-    `;
-  });
+  reminderList.innerHTML = reminders.map(r=>`
+    <li class="p-3 rounded bg-[#ecfdf5] dark:bg-gray-800
+               flex justify-between items-center">
+      ${r.subject} – ${r.day} ${r.time}
+      <button onclick="sendClassReminder('${r.subject}','${r.time}')"
+        class="text-emerald-600 dark:text-emerald-400">
+        Send
+      </button>
+    </li>`).join("");
 }
 
-// ---------- PROFILE (CLEAN UI) ----------
+// ---------- PROFILE ----------
 function renderProfile(){
-  const box = $("profileData");
-  if (!box) return;
-
-  if (user.name === "Guest") {
-    box.innerHTML = `
-      <p class="text-xl font-semibold mb-2">👤 Guest User</p>
-      <p><b>Minimum Attendance:</b> ${user.min}%</p>
-      <p class="text-sm text-gray-500 mt-2">
-        Guest data is temporary and not stored permanently.
-      </p>
-    `;
-  } else {
-    box.innerHTML = `
-      <p class="text-xl font-semibold mb-2">👤 User Profile</p>
-      <p><b>Name:</b> ${user.name}</p>
-      <p><b>Email:</b> ${user.email}</p>
-      <p><b>Minimum Attendance:</b> ${user.min}%</p>
-    `;
-  }
+  profileData.innerHTML = `
+    <p><b>User:</b> ${user.name}</p>
+    <p><b>Minimum Attendance:</b> ${user.min}%</p>
+  `;
 }
 
 // ---------- THEME ----------
@@ -273,18 +183,14 @@ function toggleTheme(){
 
 // ---------- SAVE ----------
 function save(){
-  localStorage.setItem(
-    userKey,
-    JSON.stringify({ user, subjects, reminders })
-  );
-
+  localStorage.setItem(userKey,JSON.stringify({user,subjects,reminders}));
   renderSubjects();
   renderOverallStats();
   updateAlert();
   renderReminders();
-  drawCharts();
   renderProfile();
+  drawCharts();
 }
 
-// ---------- INIT ----------
+const subjectsEl = document.getElementById("subjects");
 save();
